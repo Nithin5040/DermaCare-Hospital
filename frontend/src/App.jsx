@@ -992,7 +992,7 @@ export default function App() {
 
       {/* Thank You Booking Confirmation Modal */}
       {bookingSuccessModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setBookingSuccessModal(null)}>
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4" onClick={() => { setBookingSuccessModal(null); setActiveTab("home"); }}>
           <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-200 text-center space-y-6 relative overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-inner border border-emerald-200">
               ✓
@@ -1033,8 +1033,8 @@ export default function App() {
             </div>
 
             <div className="pt-2">
-              <button onClick={() => { setBookingSuccessModal(null); setActiveTab("dashboard"); fetchAppointments(backendUrl); }} className="w-full py-3.5 bg-gradient-to-r from-[#0F4C5C] to-[#1F4E43] text-white font-bold rounded-2xl text-xs shadow-lg shadow-teal-900/20 hover:scale-[1.02] transition">
-                View My Appointments →
+              <button onClick={() => { setBookingSuccessModal(null); setActiveTab("home"); }} className="w-full py-3.5 bg-gradient-to-r from-[#0F4C5C] to-[#1F4E43] text-white font-bold rounded-2xl text-xs shadow-lg shadow-teal-900/20 hover:scale-[1.02] transition">
+                Return to Home →
               </button>
             </div>
           </div>
