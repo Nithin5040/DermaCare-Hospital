@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS public.appointments (
     location_address TEXT,
     
     status VARCHAR(50) DEFAULT 'Confirmed', -- 'Pending', 'Confirmed', 'Completed', 'Cancelled'
+    booking_ref_id VARCHAR(20),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
