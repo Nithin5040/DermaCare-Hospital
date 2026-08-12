@@ -417,11 +417,6 @@ export default function App() {
       showNotify("warning", "🔒 Authentication Required: Please sign in to book an appointment.");
       return;
     }
-    if (!selfieImage) {
-      showNotify("error", "Skin Selfie Required: Please capture or upload a selfie for assessment.");
-      return;
-    }
-
     const refCode = Math.floor(100000 + Math.random() * 900000).toString();
     const payload = {
       user_id: user ? user.id : null,
@@ -435,7 +430,7 @@ export default function App() {
       appointment_date: bookingForm.appointment_date,
       appointment_time: bookingForm.appointment_time,
       notes: bookingForm.notes,
-      selfie_url: selfieImage,
+      selfie_url: selfieImage || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
       booking_ref_id: refCode,
       latitude: location.latitude !== null ? location.latitude : 12.971598,
       longitude: location.longitude !== null ? location.longitude : 77.594562,
@@ -773,7 +768,7 @@ export default function App() {
                 <div>
                   <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F4C5C] mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C] flex items-center justify-center text-xs">3</span>
-                    Live Camera Skin Photo *
+                    Live Camera Skin Photo (Optional)
                   </h3>
                   
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">

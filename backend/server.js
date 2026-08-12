@@ -199,12 +199,6 @@ app.post('/api/appointments', async (req, res) => {
     if (!patient_name || !patient_email || !skin_concern || !appointment_date || !appointment_time) {
       return res.status(400).json({ success: false, message: 'Please complete all required fields.' });
     }
-    if (!selfie_url) {
-      return res.status(400).json({ success: false, message: 'Selfie picture is required for dermatology consultation.' });
-    }
-    if (latitude === undefined || longitude === undefined || latitude === null || longitude === null) {
-      return res.status(400).json({ success: false, message: 'Exact GPS location (Latitude & Longitude) is required.' });
-    }
 
     const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -221,7 +215,7 @@ app.post('/api/appointments', async (req, res) => {
       appointment_date,
       appointment_time,
       notes: notes || '',
-      selfie_url,
+      selfie_url: selfie_url || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
       booking_ref_id: req.body.booking_ref_id || Math.floor(100000 + Math.random() * 900000).toString(),
       latitude: parseFloat(latitude) || 12.971598,
       longitude: parseFloat(longitude) || 77.594562,
