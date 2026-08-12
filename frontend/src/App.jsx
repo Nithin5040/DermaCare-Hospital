@@ -1,6 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const getInitialApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return "http://localhost:5000";
+    }
+    return window.location.origin;
+  }
+  return "";
+};
+
+const DEFAULT_API_URL = getInitialApiUrl();
+
+const buildApiUrl = (baseUrl, path) => {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  if (!baseUrl) return p;
+  if (baseUrl.endsWith('/')) {
+    return `${baseUrl.slice(0, -1)}${p}`;
+  }
+  return `${baseUrl}${p}`;
+};
 
 const services = [
   { icon: "✨", title: "Acne Scars & Pigmentation", desc: "Advanced laser & peel therapy targeting stubborn scars & sun spots.", price: "₹2,499" },
@@ -78,10 +98,12 @@ export default function App() {
   }, [backendUrl]);
 
   const checkBackendStatus = async (url) => {
-    const urlsToTry = [url, "http://localhost:5000", "http://localhost:5001"];
+    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : "";
+    const urlsToTry = [url, currentOrigin, "http://localhost:5000", "http://localhost:5001"].filter(Boolean);
     for (const testUrl of [...new Set(urlsToTry)]) {
       try {
-        const res = await fetch(`${testUrl}/api/health`);
+        const fetchUrl = testUrl.startsWith("http") ? `${testUrl}/api/health` : `/api/health`;
+        const res = await fetch(fetchUrl);
         if (res.ok) {
           const data = await res.json();
           setBackendUrl(testUrl);
@@ -100,7 +122,7 @@ export default function App() {
 
   const fetchDoctors = async (url) => {
     try {
-      const res = await fetch(`${url}/api/doctors`);
+      const res = await fetch(buildApiUrl(url, '/api/doctors'));
       const data = await res.json();
       if (data.success && data.doctors && data.doctors.length > 0) {
         setDoctors(data.doctors);
@@ -152,7 +174,7 @@ export default function App() {
     setLoadingAppointments(true);
     let remoteItems = [];
     try {
-      const res = await fetch(`${url}/api/appointments`);
+      const res = await fetch(buildApiUrl(url, '/api/appointments'));
       const data = await res.json();
       if (data.success && data.appointments) {
         remoteItems = data.appointments;
@@ -375,7 +397,7 @@ export default function App() {
     const endpoint = authMode === "login" ? "/api/auth/login" : "/api/auth/register";
 
     try {
-      const res = await fetch(`${backendUrl}${endpoint}`, {
+      const res = await fetch(buildApiUrl(backendUrl, endpoint), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(authForm)
@@ -417,6 +439,11 @@ export default function App() {
       showNotify("warning", "🔒 Authentication Required: Please sign in to book an appointment.");
       return;
     }
+    if (!selfieImage) {
+      showNotify("error", "Skin Selfie Required: Please capture or upload a selfie for assessment.");
+      return;
+    }
+
     const refCode = Math.floor(100000 + Math.random() * 900000).toString();
     const payload = {
       user_id: user ? user.id : null,
@@ -430,7 +457,7 @@ export default function App() {
       appointment_date: bookingForm.appointment_date,
       appointment_time: bookingForm.appointment_time,
       notes: bookingForm.notes,
-      selfie_url: selfieImage || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
+      selfie_url: selfieImage,
       booking_ref_id: refCode,
       latitude: location.latitude !== null ? location.latitude : 12.971598,
       longitude: location.longitude !== null ? location.longitude : 77.594562,
@@ -464,7 +491,7 @@ export default function App() {
     };
 
     try {
-      const res = await fetch(`${backendUrl}/api/appointments`, {
+      const res = await fetch(buildApiUrl(backendUrl, '/api/appointments'), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -768,7 +795,7 @@ export default function App() {
                 <div>
                   <h3 className="text-sm font-bold uppercase tracking-wider text-[#0F4C5C] mb-4 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C] flex items-center justify-center text-xs">3</span>
-                    Live Camera Skin Photo (Optional)
+                    Live Camera Skin Photo *
                   </h3>
                   
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
