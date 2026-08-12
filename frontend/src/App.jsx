@@ -140,22 +140,32 @@ export default function App() {
 
   const fetchAppointments = async (url) => {
     setLoadingAppointments(true);
+    let remoteItems = [];
     try {
       const res = await fetch(`${url}/api/appointments`);
       const data = await res.json();
       if (data.success && data.appointments) {
-        setAppointments(data.appointments);
-        return;
+        remoteItems = data.appointments;
       }
     } catch (e) {}
 
     const savedLocal = localStorage.getItem("derma_appointments");
+    let localItems = [];
     if (savedLocal) {
-      try {
-        setAppointments(JSON.parse(savedLocal));
-        setLoadingAppointments(false);
-        return;
-      } catch (e) {}
+      try { localItems = JSON.parse(savedLocal); } catch (e) {}
+    }
+
+    const combined = [...remoteItems];
+    localItems.forEach(item => {
+      if (!combined.some(c => String(c.id) === String(item.id))) {
+        combined.push(item);
+      }
+    });
+
+    if (combined.length > 0) {
+      setAppointments(combined);
+      setLoadingAppointments(false);
+      return;
     }
 
     setAppointments([
