@@ -206,23 +206,26 @@ app.post('/api/appointments', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Exact GPS location (Latitude & Longitude) is required.' });
     }
 
+    const isValidUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
     const newAppointment = {
-      user_id: user_id || null,
+      user_id: isValidUUID(user_id) ? user_id : null,
       patient_name,
       patient_email,
       patient_phone: patient_phone || 'N/A',
       age: parseInt(age) || 25,
       gender: gender || 'Not Specified',
       skin_concern,
-      doctor_id: doctor_id || null,
+      doctor_id: isValidUUID(doctor_id) ? doctor_id : null,
       doctor_name: doctor_name || 'Assigned Dermatologist',
       appointment_date,
       appointment_time,
       notes: notes || '',
       selfie_url,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-      location_address: location_address || `Lat: ${latitude}, Long: ${longitude}`,
+      booking_ref_id: req.body.booking_ref_id || Math.floor(100000 + Math.random() * 900000).toString(),
+      latitude: parseFloat(latitude) || 12.971598,
+      longitude: parseFloat(longitude) || 77.594562,
+      location_address: location_address || `Indiranagar, Bengaluru, Karnataka`,
       status: 'Confirmed',
       created_at: new Date().toISOString()
     };
@@ -234,7 +237,10 @@ app.post('/api/appointments', async (req, res) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase appointment insert error:', error);
+        throw error;
+      }
       return res.status(201).json({ success: true, message: 'Appointment booked successfully in Supabase!', appointment: data });
     }
 
