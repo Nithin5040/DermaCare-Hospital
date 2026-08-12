@@ -512,7 +512,7 @@ export default function App() {
       {/* Luxury Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <div onClick={() => setActiveTab("home")} onDoubleClick={() => { setActiveTab("dashboard"); showNotify("success", "🔒 Secret Appointments Dashboard Unlocked!"); }} className="flex items-center gap-3 cursor-pointer group" title="Double click to access Secret Appointments">
+          <div onClick={() => setActiveTab("home")} className="flex items-center gap-3 cursor-pointer group">
             <img 
               src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=200&auto=format&fit=crop" 
               alt="DermaCare Hospital Logo" 
@@ -537,9 +537,9 @@ export default function App() {
           <div className="flex items-center gap-3">
             {user ? (
               <div className="flex items-center gap-2">
-                <button onClick={() => { setActiveTab("dashboard"); fetchAppointments(backendUrl); showNotify("success", "📋 Care Coordinator Dashboard Opened"); }} className="text-xs font-semibold text-[#0F4C5C] bg-[#0F4C5C]/10 hover:bg-[#0F4C5C]/20 border border-[#0F4C5C]/20 px-3 py-1.5 rounded-xl hidden sm:inline-block transition cursor-pointer" title="Click to view secret appointments manager">
-                  👤 Care Coordinator: {user.full_name} 🔒
-                </button>
+                <span className="text-xs font-semibold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl hidden sm:inline-block">
+                  👤 Care Coordinator: {user.full_name}
+                </span>
                 <button onClick={handleLogout} className="px-3.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition">
                   Logout
                 </button>
@@ -558,7 +558,6 @@ export default function App() {
             <button onClick={() => setActiveTab("home")} className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition ${activeTab === 'home' ? 'bg-[#0F4C5C] text-white font-bold shadow-sm' : 'text-slate-600 bg-white border border-slate-200'}`}>Home</button>
             <button onClick={() => setActiveTab("doctors")} className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition ${activeTab === 'doctors' ? 'bg-[#0F4C5C] text-white font-bold shadow-sm' : 'text-slate-600 bg-white border border-slate-200'}`}>Specialists</button>
             <button onClick={() => handleNavToBook()} className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition ${activeTab === 'book' ? 'bg-[#0F4C5C] text-white font-bold shadow-sm' : 'text-slate-600 bg-white border border-slate-200'}`}>Book Consultation</button>
-            <button onClick={() => { setActiveTab("dashboard"); fetchAppointments(backendUrl); showNotify("success", "📋 Care Coordinator Dashboard Opened"); }} className={`px-2 py-1.5 rounded-lg whitespace-nowrap transition ${activeTab === 'dashboard' ? 'bg-[#0F4C5C] text-white font-bold shadow-sm' : 'text-[#0F4C5C] bg-teal-50 border border-teal-200 font-bold'}`}>🔒 Coordinator Portal</button>
           </div>
         )}
       </header>
