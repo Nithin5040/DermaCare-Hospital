@@ -11,8 +11,8 @@ app.use(cors());
 app.use(express.json({ limit: '25mb' })); // Support base64 selfie images up to 25MB
 
 // Initialize Supabase Client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || "https://egyjmcvnydxjidnneqax.supabase.co";
+const supabaseKey = process.env.SUPABASE_KEY || "sb_publishable_AIYtG43UURSWlHbHY6eAZA_SjP4AVEi";
 
 let supabase = null;
 if (supabaseUrl && supabaseKey && supabaseUrl !== 'YOUR_SUPABASE_URL') {
