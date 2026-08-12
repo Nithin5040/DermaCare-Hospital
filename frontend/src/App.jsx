@@ -82,9 +82,13 @@ export default function App() {
     if (savedUser) {
       try { setUser(JSON.parse(savedUser)); } catch (e) {}
     }
-    checkBackendStatus(backendUrl);
-    fetchDoctors(backendUrl);
-    fetchAppointments(backendUrl);
+
+    // First detect working backend URL, then fetch data
+    checkBackendStatus(backendUrl).then((resolvedUrl) => {
+      const url = resolvedUrl || backendUrl;
+      fetchDoctors(url);
+      fetchAppointments(url);
+    });
 
     const handleKeyDown = (e) => {
       if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
@@ -99,10 +103,16 @@ export default function App() {
 
   const checkBackendStatus = async (url) => {
     const currentOrigin = typeof window !== 'undefined' ? window.location.origin : "";
-    const urlsToTry = [url, currentOrigin, "http://localhost:5000", "http://localhost:5001"].filter(Boolean);
-    for (const testUrl of [...new Set(urlsToTry)]) {
+    const isLocalhost = currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1');
+    
+    // On hosted (Vercel), always try relative /api path FIRST
+    const urlsToTry = isLocalhost
+      ? [url, "http://localhost:5000", "http://localhost:5001"]
+      : [currentOrigin, url, "http://localhost:5000"];
+
+    for (const testUrl of [...new Set(urlsToTry)].filter(Boolean)) {
       try {
-        const fetchUrl = testUrl.startsWith("http") ? `${testUrl}/api/health` : `/api/health`;
+        const fetchUrl = `${testUrl}/api/health`;
         const res = await fetch(fetchUrl);
         if (res.ok) {
           const data = await res.json();
